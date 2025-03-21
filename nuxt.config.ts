@@ -8,7 +8,7 @@ export default defineNuxtConfig({
   app: {
     baseURL: '/',
   },
-  modules: ['@primevue/nuxt-module', '@prisma/nuxt'],
+  modules: ['@primevue/nuxt-module'],
   primevue: {
     options: {
       theme: {

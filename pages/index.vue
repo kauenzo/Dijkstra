@@ -1,71 +1,137 @@
 <script setup lang="ts">
-//@ts-nocheck
+import * as THREE from 'three'
 
-// Define a graph using an adjacency list
+// Importa o grafo definido em outro arquivo
 import { GraphXXI } from '~/constants/graphxxi'
+import type { Graph } from '~/types/graph'
 
-const dijkstra = (graph: Graph, start: string) => {
-  // Create an object to store the shortest distance from the start node to every other node
-  let distances = {}
+// Define o tipo para os nós disponíveis no select
+type NodeOption = { label: string; value: string }
 
-  // A set to keep track of all visited nodes
-  let visited = new Set()
+// Estados para armazenar o nó inicial e o nó de destino
+const startNode = ref<NodeOption | null>(null)
+const endNode = ref<NodeOption | null>(null)
 
-  // Get all the nodes of the graph
-  let nodes = Object.keys(graph)
+// Lista de opções para os selects
+const nodeOptions: NodeOption[] = Object.keys(GraphXXI).map((node) => ({
+  label: node,
+  value: node,
+}))
+const dijkstra = (graph: Graph, start: string, end: string): string[] => {
+  let log = `🟢 Iniciando Dijkstra de "${start}" até "${end}"\n`
+  let caminhoEncontrado = false
 
-  // Initially, set the shortest distance to every node as Infinity
-  for (let node of nodes) {
+  const distances: Record<string, number> = {}
+  const previous: Record<string, string | null> = {}
+  const visited = new Set<string>()
+  const nodes = Object.keys(graph)
+
+  nodes.forEach((node) => {
     distances[node] = Infinity
-  }
-
-  // The distance from the start node to itself is 0
+    previous[node] = null
+  })
   distances[start] = 0
 
-  // Loop until all nodes are visited
   while (nodes.length) {
-    // Sort nodes by distance and pick the closest unvisited node
     nodes.sort((a, b) => distances[a] - distances[b])
-    let closestNode = nodes.shift()
+    let closestNode = nodes.shift() as string
 
-    // If the shortest distance to the closest node is still Infinity, then remaining nodes are unreachable and we can break
-    if (distances[closestNode] === Infinity) break
+    log += `\n===========================\n`
+    log += `🏁 Nó escolhido: "${closestNode}" | Distância atual: ${distances[closestNode]}\n`
+    log += `===========================\n`
 
-    // Mark the chosen node as visited
+    if (distances[closestNode] === Infinity) {
+      log += `🚫 Nenhum caminho encontrado a partir deste nó.\n`
+      break
+    }
+
+    if (closestNode === end) {
+      log += `🎯 Destino "${end}" alcançado!\n`
+      caminhoEncontrado = true
+      break
+    }
+
     visited.add(closestNode)
+    let vizinhosVisitados = 0
 
-    // For each neighboring node of the current node
     for (let neighbor in graph[closestNode]) {
-      // If the neighbor hasn't been visited yet
       if (!visited.has(neighbor)) {
-        // Calculate tentative distance to the neighboring node
+        vizinhosVisitados++
         let newDistance = distances[closestNode] + graph[closestNode][neighbor]
 
-        // If the newly calculated distance is shorter than the previously known distance to this neighbor
         if (newDistance < distances[neighbor]) {
-          // Update the shortest distance to this neighbor
           distances[neighbor] = newDistance
+          previous[neighbor] = closestNode
+          log += `  ➡️ Explorando vizinho: "${neighbor}" | Nova distância: ${newDistance} (via "${closestNode}")\n`
         }
       }
     }
+
+    if (vizinhosVisitados === 0) {
+      log += `  🔄 Nenhum vizinho acessível, voltando para um nó anterior...\n`
+    }
   }
 
-  // Return the shortest distance from the start node to all nodes
-  return distances
+  const path: string[] = []
+  let current: string | null = end
+
+  while (current) {
+    path.unshift(current)
+    current = previous[current]
+  }
+
+  log += `\n===========================\n`
+  if (caminhoEncontrado) {
+    log += `🛣️ Caminho mais curto encontrado: ${path.join(' -> ')}\n`
+  } else {
+    log += `⚠️ Nenhum caminho possível de "${start}" até "${end}".\n`
+  }
+  log += `===========================\n`
+
+  console.log(log)
+  return caminhoEncontrado
+    ? path
+    : [`Nenhum caminho encontrado de ${start} até ${end}`]
 }
 
 const getGraph = () => {
-  const g = dijkstra(GraphXXI, 'G1')
-  console.log(g)
+  if (!startNode.value || !endNode.value) {
+    console.log(
+      `🚨 Selecione os nós de início e destino antes de calcular o caminho.`
+    )
+    return
+  }
+
+  console.log(`🛠️ Executando Dijkstra para encontrar o menor caminho...`)
+  const path = dijkstra(GraphXXI, startNode.value.value, endNode.value.value)
+  console.log(`🚀 Caminho final: ${path.join(' -> ')}`)
 }
-// Example: Find shortest distances from node A to all other nodes in the graph
-console.log() // Outputs: { A: 0, B: 1, C: 3, D: 4 }
 </script>
+
 <template>
-  <div>
+  <div class="p-4 flex flex-col gap-4">
+    <Dropdown
+      v-model="startNode"
+      :options="nodeOptions"
+      placeholder="Selecione o nó inicial"
+      class="w-full"
+      optionLabel="label"
+    />
+    <Dropdown
+      v-model="endNode"
+      :options="nodeOptions"
+      placeholder="Selecione o nó final"
+      class="w-full"
+      optionLabel="label"
+    />
+
     <Button
-      label="lero lero"
+      label="Calcular Caminho"
       @click="getGraph"
+    />
+    <Button
+      label="Console"
+      @click="() => console.log(nodeOptions)"
     />
   </div>
 </template>
