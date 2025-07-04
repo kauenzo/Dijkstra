@@ -1,10 +1,21 @@
-# Nuxt Minimal Starter
+# Caminho Mais Barato Entre Capitais
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Uma aplicação para encontrar o caminho mais econômico entre capitais brasileiras, considerando distâncias, pedágios e consumo de combustível.
 
-## Setup
+## Sobre o Projeto
 
-Make sure to install dependencies:
+Esta aplicação utiliza o algoritmo de Dijkstra para calcular o caminho mais barato entre capitais brasileiras, levando em consideração:
+
+- Distâncias entre as capitais
+- Custos de pedágio
+- Consumo de combustível do veículo
+- Preço do combustível
+
+O projeto foi desenvolvido com Vue.js/Nuxt e TypeScript, utilizando componentes do PrimeVue para a interface.
+
+## Configuração
+
+Certifique-se de ter o Node.js instalado em sua máquina. Em seguida, instale as dependências:
 
 ```bash
 # npm
@@ -15,14 +26,11 @@ pnpm install
 
 # yarn
 yarn install
-
-# bun
-bun install
 ```
 
-## Development Server
+## Executando o Projeto
 
-Start the development server on `http://localhost:3000`:
+Inicie o servidor de desenvolvimento em `http://localhost:3000`:
 
 ```bash
 # npm
@@ -33,14 +41,54 @@ pnpm dev
 
 # yarn
 yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
+## Como Usar a Aplicação
 
-Build the application for production:
+### 1. Seleção de Capitais
+
+- No primeiro campo, selecione a **Capital de Origem**
+- No segundo campo, selecione a **Capital de Destino**
+- As capitais devem ser diferentes para o cálculo funcionar
+
+### 2. Parâmetros de Custo
+
+- Informe o **Preço do Combustível** em R$/L (ex: 5.00)
+- Informe a **Autonomia do Veículo** em Km/L (ex: 10.0)
+- Ambos os valores devem ser maiores que zero
+
+### 3. Cálculo do Caminho
+
+- Clique no botão **Calcular Caminho Mais Barato**
+- O sistema calculará a rota mais econômica entre as capitais selecionadas
+
+### 4. Visualização dos Resultados
+
+Após o cálculo, serão exibidos:
+
+- **Caminho Mais Barato**: sequência de capitais que formam o caminho
+- **Distância Total**: distância total em quilômetros
+- **Custo Total da Viagem**: soma dos custos de combustível e pedágios
+- **Custo com Pedágios**: valor total gasto com pedágios
+- **Custo com Combustível**: valor total gasto com combustível
+
+### 5. Detalhes do Algoritmo
+
+- Clique no botão **Ver Detalhes do Algoritmo** para visualizar o passo a passo do cálculo
+- Os logs mostram cada etapa do algoritmo de Dijkstra, com informações sobre os nós visitados e custos calculados
+
+## Tratamento de Erros
+
+A aplicação possui tratamento para diversos cenários de erro:
+
+- Campos obrigatórios não preenchidos
+- Valores numéricos inválidos (zero ou negativos)
+- Mesma capital selecionada como origem e destino
+- Rota inexistente entre as capitais selecionadas
+
+## Produção
+
+Para criar uma versão de produção da aplicação:
 
 ```bash
 # npm
@@ -51,12 +99,9 @@ pnpm build
 
 # yarn
 yarn build
-
-# bun
-bun run build
 ```
 
-Locally preview production build:
+Para visualizar localmente a versão de produção:
 
 ```bash
 # npm
@@ -67,9 +112,6 @@ pnpm preview
 
 # yarn
 yarn preview
-
-# bun
-bun run preview
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.

@@ -13,6 +13,7 @@
     "@ar-js-org/ar.js-threejs": "^0.3.2",
     "@pinia/nuxt": "^0.10.1",
     "@primeuix/themes": "^1.0.0",
+    "@primevue/forms": "^4.3.6",
     "@tailwindcss/vite": "^4.0.9",
     "bcryptjs": "^3.0.2",
     "nuxt": "^3.15.4",
